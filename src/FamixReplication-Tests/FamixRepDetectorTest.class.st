@@ -70,6 +70,35 @@ FamixRepDetectorTest >> testAllEntitiesReplicasAreInTheDetector [
 	entities do: [ :entity | self assert: (allReplicas includesAll: entity replicas) ]
 ]
 
+{ #category : #'as yet unclassified' }
+FamixRepDetectorTest >> testAllEntitiesReplicasAreInTheDetector_amp_N6 [
+
+	"SmallAmp has derived this test from `FamixRepDetectorTest>>#testAllEntitiesReplicasAreInTheDetector` by applying some transformations and regenerating its assertions.
+	This test can cover this part:
+	*	In `FamixRepDetector>> #registerToBucket:from:to:in:for:` from 202 to 285:
+		Operation: ReplaceIfFalseReceiverWithTrueOperator
+		Code snippet: `concatenatedLines size > configuration minimumNumberOfCharacters 
+	ifFalse: [ ^ self ]`
+		Dynamic state: {#concatenatedLines->'5122e8a9-8a95-0d00-b29a-7594051ab49apackageorg.apache.lucene.search;/***LicensedtotheApacheSoftwareFoundation(ASF)underoneormore*contributorlicenseagreements.SeetheNOTICEfiledistributedwith'}
+		Mutant id: ReplaceIfFalseReceiverWithTrueOperator#FamixRepDetector#registerToBucket:from:to:in:for:#202#285
+"
+
+	<madeBySmallAmp>
+	| entities detector allReplicas |
+	self
+		should: [ 
+			detector := FamixRepDetector
+				            runOn:
+				            (entities := self mockEntityWithAll:
+					                         self sampleLargeSizeSources)
+				            with: (FamixRepConfiguration
+						             sourcesCleaner: FamixRepFakeCleaner new
+						             minimumNumberOfReplicas: 2
+						             ofLines: 5
+						             ofCharacters: nil) ]
+		raise: MessageNotUnderstood
+]
+
 { #category : #tests }
 FamixRepDetectorTest >> testDetector [
 	| detector dupString |
