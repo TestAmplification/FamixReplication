@@ -100,6 +100,55 @@ FamixRepDetectorTest >> testDetector [
 	self assert: detector getReplicatedFragments first replicas size equals: 2
 ]
 
+{ #category : #'as yet unclassified' }
+FamixRepDetectorTest >> testDetector_amp [
+
+	"SmallAmp has derived this test from `FamixRepDetectorTest>>#testDetector` by regenerating its assertions.
+	This test can cover these parts:
+	*	In `FamixRepDetector>> #getHashFor:concatenated:` from 66 to 103:
+		Operation: ReplaceMultiplicationWithDivisionMutantOperator
+		Code snippet: `(concatenateLines hash * 10000000000000)`
+		Dynamic state: {#concatenateLines->'I like pie  			pizza pie 			apple pie 			rad squared pi 			and other PIes'}
+		Mutant id: ReplaceMultiplicationWithDivisionMutantOperator#FamixRepDetector#getHashFor:concatenated:#66#103
+	*	In `FamixRepDetector>> #getHashFor:concatenated:` from 66 to 229:
+		Operation: ReplacePlusWithMinusMutantOperator
+		Code snippet: `concatenateLines hash * 10000000000000
++ (String streamContents: [ :s | 
+	 1 to: aCollectionOfLines size do: [ :ind | 
+	 s << (aCollectionOfLines at: ind) first ] ]) hash`
+		Dynamic state: {#concatenateLines->'Ilikepiepizzapieapplepieradsquaredpi'}
+		Mutant id: ReplacePlusWithMinusMutantOperator#FamixRepDetector#getHashFor:concatenated:#66#229
+"
+
+	<madeBySmallAmp>
+	| detector dupString |
+	detector := FamixRepDetector new configuration:
+		            (FamixRepConfiguration new
+			             minimumNumberOfLines: 5;
+			             minimumNumberOfReplicas: 2;
+			             minimumNumberOfCharacters: 30).
+	dupString := 'I like pie  
+			pizza pie 
+			apple pie 
+			rad squared pi 
+			and other PIes'.
+	detector
+		registerToBucket: dupString lines
+		from: 1
+		to: 5
+		in: nil
+		for: FamixRepTestMethod new.
+	self
+		assert: detector bucket keysSortedSafely
+		equals: #( 1163237870000123281985 ).
+	detector
+		registerToBucket: dupString lines
+		from: 1
+		to: 5
+		in: nil
+		for: FamixRepTestMethod new
+]
+
 { #category : #tests }
 FamixRepDetectorTest >> testHashBucketIsCorrectlyFilled [
 	| detector |
