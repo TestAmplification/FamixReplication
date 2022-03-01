@@ -70,6 +70,35 @@ FamixRepDetectorTest >> testAllEntitiesReplicasAreInTheDetector [
 	entities do: [ :entity | self assert: (allReplicas includesAll: entity replicas) ]
 ]
 
+{ #category : #'as yet unclassified' }
+FamixRepDetectorTest >> testAllEntitiesReplicasAreInTheDetector_amp_N6 [
+
+	"SmallAmp has derived this test from `FamixRepDetectorTest>>#testAllEntitiesReplicasAreInTheDetector` by applying some transformations and regenerating its assertions.
+	This test can cover this part:
+	*	In `FamixRepDetector>> #registerToBucket:from:to:in:for:` from 202 to 285:
+		Operation: ReplaceIfFalseReceiverWithTrueOperator
+		Code snippet: `concatenatedLines size > configuration minimumNumberOfCharacters 
+	ifFalse: [ ^ self ]`
+		Dynamic state: {#concatenatedLines->'5122e8a9-8a95-0d00-b29a-7594051ab49apackageorg.apache.lucene.search;/***LicensedtotheApacheSoftwareFoundation(ASF)underoneormore*contributorlicenseagreements.SeetheNOTICEfiledistributedwith'}
+		Mutant id: ReplaceIfFalseReceiverWithTrueOperator#FamixRepDetector#registerToBucket:from:to:in:for:#202#285
+"
+
+	<madeBySmallAmp>
+	| entities detector allReplicas |
+	self
+		should: [ 
+			detector := FamixRepDetector
+				            runOn:
+				            (entities := self mockEntityWithAll:
+					                         self sampleLargeSizeSources)
+				            with: (FamixRepConfiguration
+						             sourcesCleaner: FamixRepFakeCleaner new
+						             minimumNumberOfReplicas: 2
+						             ofLines: 5
+						             ofCharacters: nil) ]
+		raise: MessageNotUnderstood
+]
+
 { #category : #tests }
 FamixRepDetectorTest >> testDetector [
 	| detector dupString |
@@ -98,6 +127,55 @@ FamixRepDetectorTest >> testDetector [
 		for: FamixRepTestMethod new.
 	self assert: detector getReplicatedFragments size equals: 1.
 	self assert: detector getReplicatedFragments first replicas size equals: 2
+]
+
+{ #category : #'as yet unclassified' }
+FamixRepDetectorTest >> testDetector_amp [
+
+	"SmallAmp has derived this test from `FamixRepDetectorTest>>#testDetector` by regenerating its assertions.
+	This test can cover these parts:
+	*	In `FamixRepDetector>> #getHashFor:concatenated:` from 66 to 103:
+		Operation: ReplaceMultiplicationWithDivisionMutantOperator
+		Code snippet: `(concatenateLines hash * 10000000000000)`
+		Dynamic state: {#concatenateLines->'I like pie  			pizza pie 			apple pie 			rad squared pi 			and other PIes'}
+		Mutant id: ReplaceMultiplicationWithDivisionMutantOperator#FamixRepDetector#getHashFor:concatenated:#66#103
+	*	In `FamixRepDetector>> #getHashFor:concatenated:` from 66 to 229:
+		Operation: ReplacePlusWithMinusMutantOperator
+		Code snippet: `concatenateLines hash * 10000000000000
++ (String streamContents: [ :s | 
+	 1 to: aCollectionOfLines size do: [ :ind | 
+	 s << (aCollectionOfLines at: ind) first ] ]) hash`
+		Dynamic state: {#concatenateLines->'Ilikepiepizzapieapplepieradsquaredpi'}
+		Mutant id: ReplacePlusWithMinusMutantOperator#FamixRepDetector#getHashFor:concatenated:#66#229
+"
+
+	<madeBySmallAmp>
+	| detector dupString |
+	detector := FamixRepDetector new configuration:
+		            (FamixRepConfiguration new
+			             minimumNumberOfLines: 5;
+			             minimumNumberOfReplicas: 2;
+			             minimumNumberOfCharacters: 30).
+	dupString := 'I like pie  
+			pizza pie 
+			apple pie 
+			rad squared pi 
+			and other PIes'.
+	detector
+		registerToBucket: dupString lines
+		from: 1
+		to: 5
+		in: nil
+		for: FamixRepTestMethod new.
+	self
+		assert: detector bucket keysSortedSafely
+		equals: #( 1163237870000123281985 ).
+	detector
+		registerToBucket: dupString lines
+		from: 1
+		to: 5
+		in: nil
+		for: FamixRepTestMethod new
 ]
 
 { #category : #tests }
